@@ -3,6 +3,7 @@ import Encabezado from './Header'
 import Servicios from './Servicios'
 import Footer from './Footer'
 import Principal from './Principal'
+import Contacto from './Contacto'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Principal />} />
             <Route path="/servicios" element={<Servicios />} />
+            <Route path="/contacto" element={<Contacto />} />
           </Routes>
         </main>
 

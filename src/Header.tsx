@@ -26,6 +26,9 @@ function Encabezado() {
           <Link to="/servicios" className="text-slate-300 hover:text-sky-400 font-medium transition-colors duration-200">
             Servicios
           </Link>
+          <Link to="/contacto" className="text-slate-300 hover:text-sky-400 font-medium transition-colors duration-200">
+            Contacto
+          </Link>
         </nav>
 
         {/* BOTÓN DE ACCIÓN */}
