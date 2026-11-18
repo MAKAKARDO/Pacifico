@@ -5,11 +5,14 @@ require('dotenv').config();
 
 const app = express();
 
-// Permite que tu React (localhost:5173) se comunique con este backend
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json());
 
-// Configurar Nodemailer con tu Gmail
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -18,7 +21,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Endpoint que recibe el formulario y envía el correo
 app.post('/contacto', async (req, res) => {
   const {
     nombre,
@@ -30,9 +32,16 @@ app.post('/contacto', async (req, res) => {
     mensaje
   } = req.body;
 
+  if (!nombre || !apellidoPaterno || !correo || !tipoEmpresa || !tipoServicio) {
+    return res.status(400).json({ success: false, message: 'Faltan campos obligatorios' });
+  }
+
   try {
-    // Correos de las personas encargadas (separados por coma)
-    const destinatarios = 'encargado1@gmail.com, encargado2@gmail.com, tu_correo@gmail.com';
+    const destinatarios = process.env.EMAIL_DESTINO;
+
+    if (!destinatarios) {
+      return res.status(500).json({ success: false, message: 'No se configuraron correos de destino' });
+    }
 
     await transporter.sendMail({
       from: `"Pacifico Contacto" <${process.env.GMAIL_USER}>`,
@@ -41,7 +50,7 @@ app.post('/contacto', async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
           <h2 style="color: #2563eb;">📬 Nuevo formulario de contacto</h2>
-          <p><strong>Nombre:</strong> ${nombre} ${apellidoPaterno} ${apellidoMaterno}</p>
+          <p><strong>Nombre:</strong> ${nombre} ${apellidoPaterno} ${apellidoMaterno || ''}</p>
           <p><strong>Correo:</strong> ${correo}</p>
           <p><strong>Tipo de empresa:</strong> ${tipoEmpresa}</p>
           <p><strong>Tipo de servicio:</strong> ${tipoServicio}</p>
